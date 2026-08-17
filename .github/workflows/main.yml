@@ -1,0 +1,40 @@
+name: CGV 오디세이 IMAX 예매 오픈 감시
+
+on:
+  schedule:
+    # UTC 기준 5분마다 (한국시간 기준으로도 5분마다) 실행
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}  # 수동으로도 실행 가능하게
+
+permissions:
+  contents: write  # state.json 커밋을 위해 필요
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 파이썬 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: 예매 오픈 확인 및 알림
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        run: python cgv_watch.py
+
+      - name: 상태 파일 변경사항 커밋
+        run: |
+          git config user.name "cgv-watch-bot"
+          git config user.email "actions@github.com"
+          git add state.json
+          git diff --cached --quiet || git commit -m "update notified state [skip ci]"
+          git push
