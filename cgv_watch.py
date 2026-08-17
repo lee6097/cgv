@@ -36,9 +36,9 @@ HEADERS = {
 }
 
 # 이메일 설정은 환경변수로 받는다 (GitHub Actions Secrets에 등록)
-GMAIL_ADDRESS = os.environ.get("jhw6097@hanyang.ac.kr")
-GMAIL_APP_PASSWORD = os.environ.get("rocnbejswfswvnsj")
-TO_EMAIL = os.environ.get("jhw6097@naver.com", GMAIL_ADDRESS)
+GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+TO_EMAIL = os.environ.get("TO_EMAIL", GMAIL_ADDRESS)
 
 
 # ── 상태 저장/로드 ─────────────────────────────────────────────────────
