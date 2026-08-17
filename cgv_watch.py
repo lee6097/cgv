@@ -4,7 +4,7 @@ CGV 용산아이파크몰 IMAX '오디세이' 예매 오픈 모니터링 스크�
 - CGV 공개 상영 스케줄 API(searchSchByMov)를 날짜별로 조회한다.
 - 확인 대상 날짜: START_DATE ~ START_DATE + WATCH_DAYS
 - 특정 날짜에 IMAX관 상영 스케줄이 처음 생기면(=예매 오픈) 이메일을 보낸다.
-- 이미 알림을 보낸 날짜는 state.json에 기록해서 중복 발송을 막는다.
+- 이미 알림을 보낸 날짜는 state.json에 기록해서 중복 발송을 막는다..
 """
 
 import json
