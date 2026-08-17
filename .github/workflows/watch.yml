@@ -3,7 +3,7 @@ name: CGV 오디세이 IMAX 예매 오픈 감시
 on:
   schedule:
     # UTC 기준 5분마다 (한국시간 기준으로도 5분마다) 실행
-    - cron: "*/5 * * * *"
+    - cron: "2-59/5 * * * *"
   workflow_dispatch: {}  # 수동으로도 실행 가능하게
 
 permissions:
