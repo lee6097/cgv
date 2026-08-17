@@ -24,7 +24,7 @@ MOV_NO = "30001323"       # 오디세이
 TARGET_SCREEN_NM = "IMAX" # scnsNm에 이 문자열이 포함되면 IMAX 상영관으로 간주
 
 START_DATE = date(2026, 8, 26)  # 이 날짜부터
-WATCH_DAYS = 14                 # 오늘부터 14일치 날짜를 확인 (필요하면 조절)
+WATCH_DAYS = 2                 # 오늘부터 2일치 날짜를 확인 (필요하면 조절)
 
 STATE_FILE = Path(__file__).parent / "state.json"
 
