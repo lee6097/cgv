@@ -4,7 +4,7 @@ CGV 용산아이파크몰 IMAX '오디세이' 예매 오픈 모니터링 스크�
 - CGV 공개 상영 스케줄 API(searchSchByMov)를 날짜별로 조회한다.
 - 확인 대상 날짜: START_DATE ~ START_DATE + WATCH_DAYS
 - 특정 날짜에 IMAX관 상영 스케줄이 처음 생기면(=예매 오픈) 이메일을 보낸다.
-- 이미 알림을 보낸 날짜는 state.json에 기록해서 중복 발송을 막는다..
+- 이미 알림을 보낸 날짜는 state.json에 기록해서 중복 발송을 막는다.
 """
 
 import json
@@ -24,7 +24,7 @@ MOV_NO = "30001323"       # 오디세이
 TARGET_SCREEN_NM = "IMAX" # scnsNm에 이 문자열이 포함되면 IMAX 상영관으로 간주
 
 START_DATE = date(2026, 8, 31)  # 이 날짜부터
-WATCH_DAYS = 2                 # 오늘부터 2일치 날짜를 확인 (필요하면 조절)
+WATCH_DAYS = 2                 # 오늘부터 14일치 날짜를 확인 (필요하면 조절)
 
 STATE_FILE = Path(__file__).parent / "state.json"
 
@@ -38,7 +38,12 @@ HEADERS = {
 # 이메일 설정은 환경변수로 받는다 (GitHub Actions Secrets에 등록)
 GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
-TO_EMAIL = os.environ.get("TO_EMAIL", GMAIL_ADDRESS)
+# TO_EMAIL은 콤마(,)로 여러 주소를 구분해서 넣을 수 있음 (예: "a@gmail.com,b@naver.com")
+TO_EMAILS = [
+    addr.strip()
+    for addr in os.environ.get("TO_EMAIL", GMAIL_ADDRESS or "").split(",")
+    if addr.strip()
+]
 
 
 # ── 상태 저장/로드 ─────────────────────────────────────────────────────
@@ -80,7 +85,7 @@ def check_date(ymd: str) -> bool:
 
 # ── 이메일 발송 ───────────────────────────────────────────────────────
 def send_email(subject: str, body: str) -> None:
-    if not (GMAIL_ADDRESS and GMAIL_APP_PASSWORD and TO_EMAIL):
+    if not (GMAIL_ADDRESS and GMAIL_APP_PASSWORD and TO_EMAILS):
         raise RuntimeError(
             "GMAIL_ADDRESS / GMAIL_APP_PASSWORD / TO_EMAIL 환경변수가 설정되지 않았습니다."
         )
@@ -88,12 +93,12 @@ def send_email(subject: str, body: str) -> None:
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = GMAIL_ADDRESS
-    msg["To"] = TO_EMAIL
+    msg["To"] = ", ".join(TO_EMAILS)
 
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
-        server.sendmail(GMAIL_ADDRESS, [TO_EMAIL], msg.as_string())
+        server.sendmail(GMAIL_ADDRESS, TO_EMAILS, msg.as_string())
 
 
 # ── 메인 로직 ─────────────────────────────────────────────────────────
